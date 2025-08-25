@@ -1,6 +1,14 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// ===== RESPONSIVE CANVAS =====
+function resizeCanvas() {
+    canvas.width = window.innerWidth > 400 ? 400 : window.innerWidth;
+    canvas.height = window.innerHeight > 700 ? 700 : window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
 // ===== LOAD IMAGES =====
 const birdImg = new Image();
 birdImg.src = 'images/bird_flap.png';
@@ -8,9 +16,6 @@ const bgImg = new Image();
 bgImg.src = 'images/background.png';
 
 // ===== GAME VARIABLES =====
-const gameWidth = 360;
-const gameHeight = 640;
-
 let bird = { x: 50, y: 300, width: 40, height: 30, gravity: 0.6, lift: -10, velocity: 0 };
 let pipes = [];
 let frame = 0;
@@ -41,7 +46,7 @@ function getTopLeaderboard(n = 5) {
 }
 
 // ===== DRAW FUNCTIONS =====
-function drawBackground() { ctx.drawImage(bgImg, 0, 0, gameWidth, gameHeight); }
+function drawBackground() { ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height); }
 function drawBird() {
     const frameX = flapFrame * bird.width;
     ctx.drawImage(birdImg, frameX, 0, bird.width, bird.height, bird.x, bird.y, bird.width, bird.height);
@@ -50,65 +55,58 @@ function drawPipes() {
     ctx.fillStyle = "green";
     for (let pipe of pipes) {
         ctx.fillRect(pipe.x, 0, pipe.width, pipe.top);
-        ctx.fillRect(pipe.x, gameHeight - pipe.bottom, pipe.width, pipe.bottom);
+        ctx.fillRect(pipe.x, canvas.height - pipe.bottom, pipe.width, pipe.bottom);
     }
 }
 function drawScore() {
     ctx.fillStyle = "white";
-    ctx.font = "25px Arial";
+    ctx.font = Math.floor(canvas.width/15) + "px Arial";
     ctx.textAlign = "left";
     ctx.fillText(username + " Score: " + score, 10, 30);
     ctx.fillText("Highscore: " + highscore, 10, 60);
 }
 function drawGameOverScreen() {
     ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.fillRect(0,0,gameWidth,gameHeight);
+    ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
+    ctx.font = Math.floor(canvas.width/10) + "px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("GAME OVER", gameWidth/2, gameHeight/2-40);
-    ctx.font = "25px Arial";
-    ctx.fillText(username + " Score: " + score, gameWidth/2, gameHeight/2);
-    ctx.fillText("Click / Space to Restart", gameWidth/2, gameHeight/2+40);
-
-    // Restart button
-    ctx.fillStyle = "blue";
-    ctx.fillRect(gameWidth/2 - 60, gameHeight/2 + 60, 120, 40);
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("Restart", gameWidth/2, gameHeight/2 + 88);
-
+    ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2-40);
+    ctx.font = Math.floor(canvas.width/20) + "px Arial";
+    ctx.fillText(username + " Score: " + score, canvas.width/2, canvas.height/2);
+    ctx.fillText("Tap to Restart", canvas.width/2, canvas.height/2+40);
     drawLeaderboard();
 }
 function drawLeaderboard() {
     const top = getTopLeaderboard();
     ctx.fillStyle = "white";
-    ctx.font = "25px Arial";
+    ctx.font = Math.floor(canvas.width/20) + "px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("LEADERBOARD", gameWidth/2, gameHeight/2 + 140);
+    ctx.fillText("LEADERBOARD", canvas.width/2, canvas.height/2 + 100);
     for(let i=0; i<top.length; i++) {
         const [name, sc] = top[i];
-        ctx.fillText(`${i+1}. ${name} - ${sc}`, gameWidth/2, gameHeight/2 + 180 + i*30);
+        ctx.fillText(`${i+1}. ${name} - ${sc}`, canvas.width/2, canvas.height/2 + 140 + i*25);
     }
 }
 function drawUsernamePopup() {
     ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(0,0,gameWidth,gameHeight);
+    ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
+    ctx.font = Math.floor(canvas.width/12) + "px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("Enter Username:", gameWidth/2, gameHeight/2 - 20);
+    ctx.fillText("Enter Username:", canvas.width/2, canvas.height/2 - 20);
     ctx.strokeStyle = "white";
-    ctx.strokeRect(gameWidth/2 - 100, gameHeight/2, 200, 40);
-    if(username) ctx.fillText(username, gameWidth/2, gameHeight/2 + 30);
+    ctx.lineWidth = 2;
+    ctx.strokeRect(canvas.width/2 - 100, canvas.height/2, 200, 40);
+    if(username) ctx.fillText(username, canvas.width/2, canvas.height/2 + 30);
 }
 
 // ===== GAME LOGIC =====
 function updatePipes() {
     if(frame % 100 === 0) {
-        let top = Math.random() * (gameHeight/2);
-        let bottom = gameHeight - top - 150;
-        pipes.push({ x: gameWidth, width:50, top, bottom });
+        let top = Math.random() * (canvas.height/2);
+        let bottom = canvas.height - top - 150;
+        pipes.push({ x: canvas.width, width:50, top, bottom });
     }
     for(let pipe of pipes) pipe.x -= 2.5;
     pipes = pipes.filter(pipe => pipe.x + pipe.width > 0);
@@ -116,12 +114,12 @@ function updatePipes() {
 function checkCollision() {
     for(let pipe of pipes) {
         if(bird.x < pipe.x + pipe.width && bird.x + bird.width > pipe.x &&
-           (bird.y < pipe.top || bird.y + bird.height > gameHeight - pipe.bottom)) gameOver();
+           (bird.y < pipe.top || bird.y + bird.height > canvas.height - pipe.bottom)) gameOver();
     }
-    if(bird.y + bird.height > gameHeight || bird.y < 0) gameOver();
+    if(bird.y + bird.height > canvas.height || bird.y < 0) gameOver();
 }
 function resetGame() {
-    bird.y = 300;
+    bird.y = canvas.height/2;
     bird.velocity = 0;
     pipes = [];
     frame = 0;
@@ -165,17 +163,15 @@ document.addEventListener("keydown", e => {
     }
 });
 
-// Mouse / touch
-canvas.addEventListener("mousedown", e => {
-    if(!showUsernamePopup && !gameStarted) {
-        const x = e.offsetX;
-        const y = e.offsetY;
-        if(x > gameWidth/2 - 60 && x < gameWidth/2 + 60 &&
-           y > gameHeight/2 + 60 && y < gameHeight/2 + 100) resetGame();
-    }
-    flap();
+// Touch input
+canvas.addEventListener("touchstart", e => {
+    e.preventDefault();
+    if(showUsernamePopup && username) {
+        showUsernamePopup = false;
+        localStorage.setItem("flappyUsername", username);
+        resetGame();
+    } else flap();
 });
-canvas.addEventListener("touchstart", e => { e.preventDefault(); flap(); });
 
 // ===== MAIN LOOP =====
 function update() {
@@ -203,11 +199,11 @@ function update() {
         if(!gameStarted) drawGameOverScreen();
         if(isPaused) {
             ctx.fillStyle = "rgba(0,0,0,0.5)";
-            ctx.fillRect(0,0,gameWidth,gameHeight);
+            ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.fillStyle = "white";
-            ctx.font = "40px Arial";
+            ctx.font = Math.floor(canvas.width/10) + "px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("PAUSED", gameWidth/2, gameHeight/2);
+            ctx.fillText("PAUSED", canvas.width/2, canvas.height/2);
         }
     }
 
