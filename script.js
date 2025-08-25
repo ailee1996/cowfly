@@ -1,11 +1,13 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// ===== LOAD IMAGES =====
 const birdImg = new Image();
 birdImg.src = 'images/bird_flap.png';
 const bgImg = new Image();
 bgImg.src = 'images/background.png';
 
+// ===== GAME VARIABLES =====
 let bird = { x: 50, y: 300, width: 40, height: 30, gravity: 0.6, lift: -12, velocity: 0 };
 let pipes = [];
 let frame = 0;
@@ -61,9 +63,11 @@ function saveLeaderboard(score) {
 }
 
 // ===== DRAW =====
-function drawBackground(){ ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);}
+function drawBackground() { 
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+}
 function drawBird(){ 
-    ctx.drawImage(birdImg, flapFrame*bird.width,0, bird.width,bird.height, bird.x,bird.y,bird.width,bird.height);
+    ctx.drawImage(birdImg, flapFrame*bird.width, 0, bird.width, bird.height, bird.x, bird.y, bird.width, bird.height);
 }
 function drawPipes(){
     ctx.fillStyle="green";
@@ -73,67 +77,60 @@ function drawPipes(){
     }
 }
 function drawScore(){
-    ctx.fillStyle = "white";
+    ctx.fillStyle="white";
+    ctx.textAlign="left";
+    ctx.textBaseline = "top";
     ctx.font = `${Math.floor(canvas.width/15)}px Arial`;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top"; // supaya posisi lebih konsisten
-    ctx.shadowColor = "black";
-    ctx.shadowBlur = 4;
-    ctx.fillText(`${playerName} Score: ${score}`, canvas.width * 0.05, canvas.height * 0.02);
-    ctx.fillText(`Highscore: ${highscore}`, canvas.width * 0.05, canvas.height * 0.08);
-    
-    // reset shadow
-    ctx.shadowBlur = 0;
-}
-
+    ctx.fillText(`${playerName} Score: ${score}`, 20, 20);
+    ctx.fillText(`Highscore: ${highscore}`, 20, 50);
 }
 function drawGameOver(){
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillStyle="rgba(0,0,0,0.5)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top"; // pastikan baseline konsisten
+    ctx.fillStyle="white";
+    ctx.textAlign="center";
+    ctx.textBaseline = "middle";
 
-    // font proporsional
     ctx.font = `${Math.floor(canvas.width/10)}px Arial`;
-    ctx.fillText("GAME OVER", canvas.width/2, canvas.height*0.2);
+    ctx.fillText("GAME OVER", canvas.width/2, canvas.height*0.25);
 
-    ctx.font = `${Math.floor(canvas.width/18)}px Arial`;
-    ctx.fillText(`${playerName} Score: ${score}`, canvas.width/2, canvas.height*0.35);
-    ctx.fillText("Tap / Space to Restart", canvas.width/2, canvas.height*0.45);
+    ctx.font = `${Math.floor(canvas.width/16)}px Arial`;
+    ctx.fillText(`${playerName} Score: ${score}`, canvas.width/2, canvas.height*0.4);
+    ctx.fillText("Tap / Space to Restart", canvas.width/2, canvas.height*0.5);
 
     drawLeaderboard();
 }
 function drawLeaderboard(){
     const top = getLeaderboard();
     ctx.fillStyle="white";
-    ctx.font = Math.floor(canvas.width/18)+"px Arial";
     ctx.textAlign="center";
-    ctx.fillText("LEADERBOARD",canvas.width/2,canvas.height/2 + 120);
+    ctx.textBaseline = "top";
+    ctx.font = `${Math.floor(canvas.width/20)}px Arial`;
+    ctx.fillText("LEADERBOARD", canvas.width/2, canvas.height*0.55);
     for(let i=0;i<top.length;i++){
         const [name, sc] = top[i];
-        ctx.fillText(`${i+1}. ${name} - ${sc}`, canvas.width/2,canvas.height/2+160+i*35);
+        ctx.fillText(`${i+1}. ${name} - ${sc}`, canvas.width/2, canvas.height*0.6 + i*(canvas.height*0.05));
     }
 }
 
 // ===== GAME LOGIC =====
 function updatePipes(){
-    if(frame % 100===0){
-        let top=Math.random()*(canvas.height/2);
-        let bottom = canvas.height-top-pipeGap;
+    if(frame % 100 === 0){
+        let top = Math.random()*(canvas.height/2);
+        let bottom = canvas.height - top - pipeGap;
         pipes.push({x:canvas.width, top, bottom});
     }
     for(let pipe of pipes) pipe.x -= canvas.width*0.006;
-    pipes = pipes.filter(pipe => pipe.x+pipeWidth>0);
+    pipes = pipes.filter(pipe => pipe.x + pipeWidth > 0);
 }
 
 function checkCollision(){
     for(let pipe of pipes){
-        if(bird.x<pipe.x+pipeWidth && bird.x+bird.width>pipe.x &&
-           (bird.y<pipe.top || bird.y+bird.height>canvas.height-pipe.bottom)) gameOver();
+        if(bird.x < pipe.x + pipeWidth && bird.x + bird.width > pipe.x &&
+           (bird.y < pipe.top || bird.y + bird.height > canvas.height - pipe.bottom)) gameOver();
     }
-    if(bird.y+bird.height>canvas.height || bird.y<0) gameOver();
+    if(bird.y + bird.height > canvas.height || bird.y < 0) gameOver();
 }
 
 function resetGame(){
@@ -163,26 +160,30 @@ function flap(){
     else if(!gameStarted) resetGame();
 }
 
-document.addEventListener("keydown",e=>{
+document.addEventListener("keydown", e => {
     if(e.code==="Space") flap();
-    if(e.code==="KeyP") isPaused=!isPaused;
+    if(e.code==="KeyP") isPaused = !isPaused;
 });
-canvas.addEventListener("touchstart",e=>{e.preventDefault(); flap();});
+
+canvas.addEventListener("touchstart", e => { 
+    e.preventDefault(); 
+    flap();
+});
 
 // ===== MAIN LOOP =====
 function update(){
     drawBackground();
 
     if(gameStarted && !isPaused){
-        bird.velocity+=bird.gravity;
-        bird.y+=bird.velocity;
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
 
         updatePipes();
         checkCollision();
 
         frame++;
-        score=Math.floor(frame/15);
-        if(frame%5===0) flapFrame=(flapFrame+1)%3;
+        score = Math.floor(frame/15);
+        if(frame % 5 === 0) flapFrame = (flapFrame+1)%3;
     }
 
     drawPipes();
@@ -190,24 +191,24 @@ function update(){
     drawScore();
 
     if(!gameStarted) drawGameOver();
+
     if(isPaused){
         ctx.fillStyle="rgba(0,0,0,0.5)";
         ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle="white";
-        ctx.font=Math.floor(canvas.width/7)+"px Arial";
         ctx.textAlign="center";
-        ctx.fillText("PAUSED",canvas.width/2,canvas.height/2);
+        ctx.textBaseline="middle";
+        ctx.font = `${Math.floor(canvas.width/7)}px Arial`;
+        ctx.fillText("PAUSED", canvas.width/2, canvas.height/2);
     }
 
     requestAnimationFrame(update);
 }
 
-// ===== START =====
-birdImg.onload=()=>{
-    bgImg.onload=()=>{
+// ===== START GAME =====
+birdImg.onload = () => {
+    bgImg.onload = () => {
         resetGame();
         update();
     };
 };
-
-
