@@ -73,10 +73,19 @@ function drawPipes(){
     }
 }
 function drawScore(){
-    ctx.fillStyle="white";
-    ctx.font = Math.floor(canvas.width/15)+"px Arial";
-    ctx.fillText(`${playerName} Score: ${score}`,20,50);
-    ctx.fillText(`Highscore: ${highscore}`,20,100);
+    ctx.fillStyle = "white";
+    ctx.font = `${Math.floor(canvas.width/15)}px Arial`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top"; // supaya posisi lebih konsisten
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 4;
+    ctx.fillText(`${playerName} Score: ${score}`, canvas.width * 0.05, canvas.height * 0.02);
+    ctx.fillText(`Highscore: ${highscore}`, canvas.width * 0.05, canvas.height * 0.08);
+    
+    // reset shadow
+    ctx.shadowBlur = 0;
+}
+
 }
 function drawGameOver(){
     ctx.fillStyle="rgba(0,0,0,0.5)";
@@ -194,3 +203,4 @@ birdImg.onload=()=>{
         update();
     };
 };
+
