@@ -33,9 +33,8 @@ let pipeWidth = 60;
 let pipeGap = 150;
 
 // ===== USERNAME & HIGHSCORE =====
-let username = "";
+let username = "Player"; // default langsung Player
 let highscore = 0;
-let showUsernamePopup = true;
 
 // ===== HELPER FUNCTIONS =====
 function saveScoreToLeaderboard(username, score) {
@@ -70,7 +69,7 @@ function drawScore() {
     ctx.fillStyle = "white";
     ctx.font = Math.floor(canvas.width/12) + "px Arial";
     ctx.textAlign = "left";
-    ctx.fillText(username + " Score: " + score, 20, 50);
+    ctx.fillText("Score: " + score, 20, 50);
     ctx.fillText("Highscore: " + highscore, 20, 100);
 }
 function drawGameOverScreen() {
@@ -81,7 +80,7 @@ function drawGameOverScreen() {
     ctx.textAlign = "center";
     ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2-60);
     ctx.font = Math.floor(canvas.width/14) + "px Arial";
-    ctx.fillText(username + " Score: " + score, canvas.width/2, canvas.height/2);
+    ctx.fillText("Score: " + score, canvas.width/2, canvas.height/2);
     ctx.fillText("Tap to Restart", canvas.width/2, canvas.height/2+60);
     drawLeaderboard();
 }
@@ -95,18 +94,6 @@ function drawLeaderboard() {
         const [name, sc] = top[i];
         ctx.fillText(`${i+1}. ${name} - ${sc}`, canvas.width/2, canvas.height/2 + 160 + i*40);
     }
-}
-function drawUsernamePopup() {
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "white";
-    ctx.font = Math.floor(canvas.width/10) + "px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Enter Username:", canvas.width/2, canvas.height/2 - 40);
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(canvas.width/2 - 150, canvas.height/2, 300, 60);
-    if(username) ctx.fillText(username, canvas.width/2, canvas.height/2 + 40);
 }
 
 // ===== GAME LOGIC =====
@@ -153,67 +140,50 @@ function gameOver() {
 // ===== INPUT =====
 function flap() {
     if(gameStarted && !isPaused) bird.velocity = bird.lift;
-    else if(!gameStarted && username) resetGame();
+    else if(!gameStarted) resetGame();
 }
 
 // Keyboard
 document.addEventListener("keydown", e => {
-    if(showUsernamePopup) {
-        if(e.key.length === 1 && username.length < 10) username += e.key;
-        if(e.key === "Backspace") username = username.slice(0,-1);
-        if(e.key === "Enter" && username) {
-            showUsernamePopup = false;
-            localStorage.setItem("flappyUsername", username);
-            resetGame();
-        }
-    } else {
-        if(e.code === "Space") flap();
-        if(e.code === "KeyP") isPaused = !isPaused;
-    }
+    if(e.code === "Space") flap();
+    if(e.code === "KeyP") isPaused = !isPaused;
 });
 
 // Touch input
 canvas.addEventListener("touchstart", e => {
     e.preventDefault();
-    if(showUsernamePopup && username) {
-        showUsernamePopup = false;
-        localStorage.setItem("flappyUsername", username);
-        resetGame();
-    } else flap();
+    flap();
 });
 
 // ===== MAIN LOOP =====
 function update() {
     drawBackground();
 
-    if(showUsernamePopup) drawUsernamePopup();
-    else {
-        if(gameStarted && !isPaused) {
-            bird.velocity += bird.gravity;
-            bird.y += bird.velocity;
+    if(gameStarted && !isPaused) {
+        bird.velocity += bird.gravity;
+        bird.y += bird.velocity;
 
-            updatePipes();
-            checkCollision();
+        updatePipes();
+        checkCollision();
 
-            frame++;
-            score = Math.floor(frame/15);
+        frame++;
+        score = Math.floor(frame/15);
 
-            if(frame % 5 === 0) flapFrame = (flapFrame+1)%3;
-        }
+        if(frame % 5 === 0) flapFrame = (flapFrame+1)%3;
+    }
 
-        drawPipes();
-        drawBird();
-        drawScore();
+    drawPipes();
+    drawBird();
+    drawScore();
 
-        if(!gameStarted) drawGameOverScreen();
-        if(isPaused) {
-            ctx.fillStyle = "rgba(0,0,0,0.5)";
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = "white";
-            ctx.font = Math.floor(canvas.width/7) + "px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("PAUSED", canvas.width/2, canvas.height/2);
-        }
+    if(!gameStarted) drawGameOverScreen();
+    if(isPaused) {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = Math.floor(canvas.width/7) + "px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("PAUSED", canvas.width/2, canvas.height/2);
     }
 
     requestAnimationFrame(update);
@@ -222,10 +192,8 @@ function update() {
 // ===== START GAME SETUP =====
 birdImg.onload = () => {
     bgImg.onload = () => {
-        username = localStorage.getItem("flappyUsername") || "";
-        showUsernamePopup = !username;
         resizeCanvas();
-        if(!showUsernamePopup) resetGame();
+        resetGame(); // langsung mulai tanpa popup
         update();
     };
 };
