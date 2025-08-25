@@ -2,28 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird Ngepak</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ini penting -->
+  <title>CowFly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      overflow: hidden;
       background: #70c5ce;
     }
     canvas {
       display: block;
-      max-width: 100%;
-      height: auto;
-      background: #70c5ce; /* fallback sebelum gambar load */
+      margin: 0 auto;
+      background: #70c5ce;
+    }
+    #usernamePopup {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(0,0,0,0.85);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      color: white;
+      font-family: sans-serif;
+      z-index: 999;
+    }
+    #usernameInput {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      width: 80%;
+      margin-top: 10px;
+    }
+    #startBtn {
+      margin-top: 12px;
+      padding: 8px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="360" height="640"></canvas>
+  <div id="usernamePopup">
+    <p>Enter Username:</p>
+    <input id="usernameInput" type="text" maxlength="10">
+    <br>
+    <button id="startBtn">Start</button>
+  </div>
+  <canvas id="gameCanvas"></canvas>
   <script src="script.js"></script>
 </body>
 </html>
