@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Flappy Bird Ngepak</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ini penting -->
+  <title>Cow Fly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -13,17 +13,16 @@
       align-items: center;
       height: 100vh;
       background: #70c5ce;
+      overflow: hidden;
     }
     canvas {
       display: block;
-      max-width: 100%;
-      height: auto;
-      background: #70c5ce; /* fallback sebelum gambar load */
+      background: #70c5ce; /* fallback sebelum bg load */
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="360" height="640"></canvas>
+  <canvas id="gameCanvas"></canvas>
   <script src="script.js"></script>
 </body>
 </html>
