@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Flappy Bird Ngepak</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ini penting -->
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #70c5ce;
+    }
     canvas {
       display: block;
-      margin: 0 auto;
-      background: #70c5ce; /* fallback warna sebelum background image load */
+      max-width: 100%;
+      height: auto;
+      background: #70c5ce; /* fallback sebelum gambar load */
     }
   </style>
 </head>
