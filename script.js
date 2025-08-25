@@ -88,15 +88,21 @@ function drawScore(){
 
 }
 function drawGameOver(){
-    ctx.fillStyle="rgba(0,0,0,0.5)";
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle="white";
-    ctx.font = Math.floor(canvas.width/7)+"px Arial";
-    ctx.textAlign="center";
-    ctx.fillText("GAME OVER",canvas.width/2,canvas.height/2-60);
-    ctx.font = Math.floor(canvas.width/14)+"px Arial";
-    ctx.fillText(`${playerName} Score: ${score}`,canvas.width/2,canvas.height/2);
-    ctx.fillText("Tap / Space to Restart",canvas.width/2,canvas.height/2+60);
+
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top"; // pastikan baseline konsisten
+
+    // font proporsional
+    ctx.font = `${Math.floor(canvas.width/10)}px Arial`;
+    ctx.fillText("GAME OVER", canvas.width/2, canvas.height*0.2);
+
+    ctx.font = `${Math.floor(canvas.width/18)}px Arial`;
+    ctx.fillText(`${playerName} Score: ${score}`, canvas.width/2, canvas.height*0.35);
+    ctx.fillText("Tap / Space to Restart", canvas.width/2, canvas.height*0.45);
+
     drawLeaderboard();
 }
 function drawLeaderboard(){
@@ -203,4 +209,5 @@ birdImg.onload=()=>{
         update();
     };
 };
+
 
